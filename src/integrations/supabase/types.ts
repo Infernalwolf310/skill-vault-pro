@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      certifications: {
+        Row: {
+          certificate_file_url: string | null
+          created_at: string
+          description: string | null
+          expires_date: string | null
+          id: string
+          issued_date: string | null
+          issuer: string
+          official_link: string | null
+          status: Database["public"]["Enums"]["certification_status"]
+          title: string
+          type: Database["public"]["Enums"]["certification_type"]
+          updated_at: string
+        }
+        Insert: {
+          certificate_file_url?: string | null
+          created_at?: string
+          description?: string | null
+          expires_date?: string | null
+          id?: string
+          issued_date?: string | null
+          issuer: string
+          official_link?: string | null
+          status?: Database["public"]["Enums"]["certification_status"]
+          title: string
+          type?: Database["public"]["Enums"]["certification_type"]
+          updated_at?: string
+        }
+        Update: {
+          certificate_file_url?: string | null
+          created_at?: string
+          description?: string | null
+          expires_date?: string | null
+          id?: string
+          issued_date?: string | null
+          issuer?: string
+          official_link?: string | null
+          status?: Database["public"]["Enums"]["certification_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["certification_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          is_admin: boolean
+          totp_secret: string | null
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          totp_secret?: string | null
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          totp_secret?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +97,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      certification_status: "completed" | "in_progress"
+      certification_type: "certification" | "badge" | "qualification"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +225,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      certification_status: ["completed", "in_progress"],
+      certification_type: ["certification", "badge", "qualification"],
+    },
   },
 } as const
