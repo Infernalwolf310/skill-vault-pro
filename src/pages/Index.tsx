@@ -93,8 +93,7 @@ const Index = () => {
             {user && (
               <Link to="/admin">
                 <Button className="bg-primary hover:bg-primary/90">
-                  Admin Dashboard
-                </Button>
+                  Login                </Button>
               </Link>
             )}
           </div>
