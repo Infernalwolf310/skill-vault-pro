@@ -89,6 +89,38 @@ export type Database = {
         }
         Relationships: []
       }
+      skills: {
+        Row: {
+          certification_id: string
+          created_at: string
+          id: string
+          skill_name: string
+          updated_at: string
+        }
+        Insert: {
+          certification_id: string
+          created_at?: string
+          id?: string
+          skill_name: string
+          updated_at?: string
+        }
+        Update: {
+          certification_id?: string
+          created_at?: string
+          id?: string
+          skill_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skills_certification_id_fkey"
+            columns: ["certification_id"]
+            isOneToOne: false
+            referencedRelation: "certifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

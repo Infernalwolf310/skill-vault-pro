@@ -1,14 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Certification } from '@/types/certification';
 import { ExternalLink, FileText, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CertificationCardProps {
   certification: Certification;
 }
 
 export const CertificationCard = ({ certification }: CertificationCardProps) => {
+  const [skills, setSkills] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchSkills();
+  }, [certification.id]);
+
+  const fetchSkills = async () => {
+    const { data } = await supabase
+      .from('skills')
+      .select('skill_name')
+      .eq('certification_id', certification.id)
+      .order('skill_name');
+    
+    if (data) {
+      setSkills(data.map(skill => skill.skill_name));
+    }
+  };
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -87,14 +108,43 @@ export const CertificationCard = ({ certification }: CertificationCardProps) => 
           )}
           
           {certification.description && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Info className="w-4 h-4 mr-1" />
-              Description
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  <Info className="w-4 h-4 mr-1" />
+                  Description
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{certification.title}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Description</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {certification.description}
+                    </p>
+                  </div>
+                  {skills.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">Skills</h3>
+                      <ul className="list-disc list-inside space-y-1">
+                        {skills.map((skill, index) => (
+                          <li key={index} className="text-muted-foreground">
+                            {skill}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
           
           {certification.official_link && (

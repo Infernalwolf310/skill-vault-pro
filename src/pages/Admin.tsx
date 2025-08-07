@@ -9,13 +9,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from '@/integrations/supabase/client';
 import { Certification, CertificationType, CertificationStatus } from '@/types/certification';
 import { toast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, Tags, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export const Admin = () => {
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSkillsDialogOpen, setIsSkillsDialogOpen] = useState(false);
   const [editingCert, setEditingCert] = useState<Certification | null>(null);
+  const [selectedCertForSkills, setSelectedCertForSkills] = useState<Certification | null>(null);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [newSkill, setNewSkill] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const { signOut } = useAuth();
@@ -167,6 +171,74 @@ export const Admin = () => {
     setEditingCert(null);
     setFile(null);
     setIsDialogOpen(true);
+  };
+
+  const fetchSkills = async (certificationId: string) => {
+    const { data } = await supabase
+      .from('skills')
+      .select('skill_name')
+      .eq('certification_id', certificationId)
+      .order('skill_name');
+    
+    if (data) {
+      setSkills(data.map(skill => skill.skill_name));
+    }
+  };
+
+  const openSkillsDialog = (cert: Certification) => {
+    setSelectedCertForSkills(cert);
+    setIsSkillsDialogOpen(true);
+    fetchSkills(cert.id);
+  };
+
+  const addSkill = async () => {
+    if (!newSkill.trim() || !selectedCertForSkills) return;
+
+    const { error } = await supabase
+      .from('skills')
+      .insert([{
+        certification_id: selectedCertForSkills.id,
+        skill_name: newSkill.trim()
+      }]);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add skill",
+        variant: "destructive",
+      });
+    } else {
+      setNewSkill('');
+      fetchSkills(selectedCertForSkills.id);
+      toast({
+        title: "Success",
+        description: "Skill added successfully",
+      });
+    }
+  };
+
+  const removeSkill = async (skillName: string) => {
+    if (!selectedCertForSkills) return;
+
+    const { error } = await supabase
+      .from('skills')
+      .delete()
+      .eq('certification_id', selectedCertForSkills.id)
+      .eq('skill_name', skillName);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove skill",
+        variant: "destructive",
+      });
+    } else {
+      fetchSkills(selectedCertForSkills.id);
+      toast({
+        title: "Success",
+        description: "Skill removed successfully",
+      });
+    }
   };
 
   return (
@@ -332,6 +404,14 @@ export const Admin = () => {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={() => openSkillsDialog(cert)}
+                      className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                    >
+                      <Tags className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => openEditDialog(cert)}
                     >
                       <Edit className="w-4 h-4" />
@@ -365,6 +445,52 @@ export const Admin = () => {
             </Card>
           ))}
         </div>
+
+        {/* Skills Management Dialog */}
+        <Dialog open={isSkillsDialogOpen} onOpenChange={setIsSkillsDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                Manage Skills - {selectedCertForSkills?.title}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a new skill..."
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addSkill()}
+                />
+                <Button onClick={addSkill} disabled={!newSkill.trim()}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-semibold">Current Skills:</h3>
+                {skills.length === 0 ? (
+                  <p className="text-muted-foreground">No skills added yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {skills.map((skill, index) => (
+                      <div key={index} className="flex items-center justify-between bg-muted p-2 rounded">
+                        <span>{skill}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSkill(skill)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
