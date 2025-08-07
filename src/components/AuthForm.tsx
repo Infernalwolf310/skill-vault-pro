@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,10 +6,19 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect authenticated users to admin
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/admin');
+    }
+  }, [user, loading, navigate]);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,6 +41,7 @@ export const AuthForm = () => {
         title: "Success",
         description: "Logged in successfully!",
       });
+      // Navigation will be handled by useEffect
     }
 
     setIsLoading(false);

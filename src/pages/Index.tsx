@@ -90,10 +90,17 @@ const Index = () => {
               <h1 className="text-3xl font-bold text-primary">Accreditations & Certificates</h1>
               <p className="text-muted-foreground mt-2">A showcase of achievements and professional development</p>
             </div>
-            {user && (
+            {user ? (
               <Link to="/admin">
                 <Button className="bg-primary hover:bg-primary/90">
-                  Login                </Button>
+                  Admin Panel
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button className="bg-primary hover:bg-primary/90">
+                  Login
+                </Button>
               </Link>
             )}
           </div>
