@@ -71,11 +71,26 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="border-b border-border bg-card">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-primary">Accreditations & Certificates</h1>
+                <p className="text-muted-foreground mt-2">A showcase of achievements and professional development</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Loading content */}
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading certifications...</p>
+          </div>
+        </main>
       </div>
     );
   }
