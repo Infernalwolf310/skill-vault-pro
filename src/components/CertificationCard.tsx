@@ -90,21 +90,30 @@ export const CertificationCard = ({ certification }: CertificationCardProps) => 
       <CardContent className="flex-1 flex flex-col justify-between">
         <div className="flex flex-wrap gap-2">
           {certification.certificate_file_url && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-              asChild
-            >
-              <a 
-                href={certification.certificate_file_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <FileText className="w-4 h-4 mr-1" />
-                View Certification
-              </a>
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  <FileText className="w-4 h-4 mr-1" />
+                  View Certificate
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+                <DialogHeader className="p-6 pb-2">
+                  <DialogTitle className="text-xl">{certification.title} - Certificate</DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 overflow-hidden">
+                  <iframe
+                    src={certification.certificate_file_url}
+                    className="w-full h-[70vh] border-0"
+                    title={`${certification.title} Certificate`}
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
           
           {certification.description && (
