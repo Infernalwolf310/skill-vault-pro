@@ -55,14 +55,20 @@ const Index = () => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'oldest':
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          // Use issued_date if available, fallback to created_at
+          const aDate = a.issued_date ? new Date(a.issued_date) : new Date(a.created_at);
+          const bDate = b.issued_date ? new Date(b.issued_date) : new Date(b.created_at);
+          return aDate.getTime() - bDate.getTime();
         case 'title':
           return a.title.localeCompare(b.title);
         case 'issuer':
           return a.issuer.localeCompare(b.issuer);
         case 'newest':
         default:
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          // Use issued_date if available, fallback to created_at
+          const aDateNew = a.issued_date ? new Date(a.issued_date) : new Date(a.created_at);
+          const bDateNew = b.issued_date ? new Date(b.issued_date) : new Date(b.created_at);
+          return bDateNew.getTime() - aDateNew.getTime();
       }
     });
 
@@ -140,11 +146,19 @@ const Index = () => {
 
         {/* Certifications Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCertifications.map((certification) => (
-            <CertificationCard
+          {filteredCertifications.map((certification, index) => (
+            <div
               key={certification.id}
-              certification={certification}
-            />
+              className="animate-fade-in"
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                animationFillMode: 'both'
+              }}
+            >
+              <CertificationCard
+                certification={certification}
+              />
+            </div>
           ))}
         </div>
 
