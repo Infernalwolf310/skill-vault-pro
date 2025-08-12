@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { CertificationCard } from '@/components/CertificationCard';
 import { CertificationFilters } from '@/components/CertificationFilters';
@@ -10,37 +10,20 @@ import { Link } from 'react-router-dom';
 
 const Index = () => {
   const [certifications, setCertifications] = useState<Certification[]>([]);
-  const [filteredCertifications, setFilteredCertifications] = useState<Certification[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [issuerFilter, setIssuerFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [issuers, setIssuers] = useState<string[]>([]);
+  const [animatingOut, setAnimatingOut] = useState<Set<string>>(new Set());
   const { user, loading } = useAuth();
 
   useEffect(() => {
     fetchCertifications();
   }, []);
 
-  useEffect(() => {
-    filterAndSortCertifications();
-  }, [certifications, searchTerm, issuerFilter, typeFilter, statusFilter, sortBy]);
-
-  const fetchCertifications = async () => {
-    const { data, error } = await supabase
-      .from('certifications')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      setCertifications(data);
-      const uniqueIssuers = [...new Set(data.map(cert => cert.issuer))].sort();
-      setIssuers(uniqueIssuers);
-    }
-  };
-
-  const filterAndSortCertifications = () => {
+  const filteredCertifications = useMemo(() => {
     let filtered = certifications.filter(cert => {
       const matchesSearch = cert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            cert.issuer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -55,7 +38,6 @@ const Index = () => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'oldest':
-          // Use issued_date if available, fallback to created_at
           const aDate = a.issued_date ? new Date(a.issued_date) : new Date(a.created_at);
           const bDate = b.issued_date ? new Date(b.issued_date) : new Date(b.created_at);
           return aDate.getTime() - bDate.getTime();
@@ -65,14 +47,26 @@ const Index = () => {
           return a.issuer.localeCompare(b.issuer);
         case 'newest':
         default:
-          // Use issued_date if available, fallback to created_at
           const aDateNew = a.issued_date ? new Date(a.issued_date) : new Date(a.created_at);
           const bDateNew = b.issued_date ? new Date(b.issued_date) : new Date(b.created_at);
           return bDateNew.getTime() - aDateNew.getTime();
       }
     });
 
-    setFilteredCertifications(filtered);
+    return filtered;
+  }, [certifications, searchTerm, issuerFilter, typeFilter, statusFilter, sortBy]);
+
+  const fetchCertifications = async () => {
+    const { data, error } = await supabase
+      .from('certifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setCertifications(data);
+      const uniqueIssuers = [...new Set(data.map(cert => cert.issuer))].sort();
+      setIssuers(uniqueIssuers);
+    }
   };
 
   if (loading) {
@@ -145,11 +139,15 @@ const Index = () => {
         />
 
         {/* Certifications Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCertifications.map((certification) => (
             <div
               key={certification.id}
-              className="transition-all duration-300 ease-in-out opacity-100"
+              className="animate-fade-in-up opacity-0"
+              style={{
+                animation: 'fade-in-up 0.5s ease-out forwards',
+                animationDelay: '0.1s'
+              }}
             >
               <CertificationCard
                 certification={certification}
