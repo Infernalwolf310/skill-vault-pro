@@ -101,16 +101,28 @@ export const CertificationCard = ({ certification }: CertificationCardProps) => 
                   View Certificate
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+              <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0">
                 <DialogHeader className="p-6 pb-2">
                   <DialogTitle className="text-xl">{certification.title} - Certificate</DialogTitle>
                 </DialogHeader>
-                <div className="flex-1 overflow-hidden">
-                  <iframe
-                    src={certification.certificate_file_url}
-                    className="w-full h-[70vh] border-0"
-                    title={`${certification.title} Certificate`}
-                  />
+                <div className="flex-1 overflow-hidden p-4">
+                  <object
+                    data={certification.certificate_file_url}
+                    type="application/pdf"
+                    className="w-full h-[70vh] border border-border rounded-lg"
+                  >
+                    <div className="flex flex-col items-center justify-center h-[70vh] bg-muted rounded-lg">
+                      <FileText className="w-16 h-16 text-muted-foreground mb-4" />
+                      <p className="text-lg font-medium mb-2">Unable to display certificate</p>
+                      <Button 
+                        variant="outline"
+                        onClick={() => window.open(certification.certificate_file_url, '_blank')}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Open in new tab
+                      </Button>
+                    </div>
+                  </object>
                 </div>
               </DialogContent>
             </Dialog>
