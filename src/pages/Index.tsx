@@ -145,15 +145,11 @@ const Index = () => {
         />
 
         {/* Certifications Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCertifications.map((certification, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
+          {filteredCertifications.map((certification) => (
             <div
               key={certification.id}
-              className="animate-fade-in"
-              style={{
-                animationDelay: `${index * 0.1}s`,
-                animationFillMode: 'both'
-              }}
+              className="transition-all duration-300 ease-in-out opacity-100"
             >
               <CertificationCard
                 certification={certification}

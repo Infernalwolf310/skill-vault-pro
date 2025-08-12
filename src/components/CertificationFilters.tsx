@@ -31,7 +31,7 @@ export const CertificationFilters = ({
   issuers
 }: CertificationFiltersProps) => {
   return (
-    <div className="flex flex-col lg:flex-row gap-4 mb-8 animate-slide-up">
+    <div className="flex flex-col lg:flex-row gap-4 mb-8 animate-fade-in-up">
       <div className="flex-1 relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
         <Input

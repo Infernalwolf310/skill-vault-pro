@@ -52,7 +52,7 @@ export const CertificationCard = ({ certification }: CertificationCardProps) => 
   };
 
   return (
-    <Card className="bg-gradient-card border-border hover:border-primary/50 transition-all duration-300">
+    <Card className="bg-gradient-card border-border hover:border-primary/50 transition-all duration-300 h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="space-y-2">
@@ -87,7 +87,7 @@ export const CertificationCard = ({ certification }: CertificationCardProps) => 
         </Badge>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="flex-1 flex flex-col justify-between">
         <div className="flex flex-wrap gap-2">
           {certification.certificate_file_url && (
             <Button 
