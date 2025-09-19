@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -86,6 +86,14 @@ export const AuthForm = () => {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
+          <div className="mt-4 text-center">
+            <Link 
+              to="/" 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Return to Certifications
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

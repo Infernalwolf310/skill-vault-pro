@@ -11,6 +11,7 @@ import { Certification, CertificationType, CertificationStatus } from '@/types/c
 import { toast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Upload, Tags, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export const Admin = () => {
   const [certifications, setCertifications] = useState<Certification[]>([]);
@@ -23,6 +24,7 @@ export const Admin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCertifications();
@@ -385,7 +387,13 @@ export const Admin = () => {
                 </form>
               </DialogContent>
             </Dialog>
-            <Button variant="outline" onClick={signOut}>
+            <Button 
+              variant="outline" 
+              onClick={async () => {
+                await signOut();
+                navigate('/');
+              }}
+            >
               Sign Out
             </Button>
           </div>
