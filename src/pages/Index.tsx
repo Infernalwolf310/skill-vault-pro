@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { CertificationCard } from '@/components/CertificationCard';
 import { CertificationFilters } from '@/components/CertificationFilters';
@@ -16,8 +16,10 @@ const Index = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [issuers, setIssuers] = useState<string[]>([]);
-  const [animatingOut, setAnimatingOut] = useState<Set<string>>(new Set());
+  const [animatingItems, setAnimatingItems] = useState<Set<string>>(new Set());
+  const [isFiltering, setIsFiltering] = useState(false);
   const { user, loading } = useAuth();
+  const prevFilteredIds = useRef<string[]>([]);
 
   useEffect(() => {
     fetchCertifications();
@@ -55,6 +57,25 @@ const Index = () => {
 
     return filtered;
   }, [certifications, searchTerm, issuerFilter, typeFilter, statusFilter, sortBy]);
+
+  // Handle smooth transitions when filters change
+  useEffect(() => {
+    const currentIds = filteredCertifications.map(cert => cert.id);
+    const prevIds = prevFilteredIds.current;
+    
+    if (prevIds.length > 0 && JSON.stringify(currentIds) !== JSON.stringify(prevIds)) {
+      setIsFiltering(true);
+      
+      // Reset after animation duration
+      const timer = setTimeout(() => {
+        setIsFiltering(false);
+      }, 400);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    prevFilteredIds.current = currentIds;
+  }, [filteredCertifications]);
 
   const fetchCertifications = async () => {
     const { data, error } = await supabase
@@ -140,13 +161,16 @@ const Index = () => {
 
         {/* Certifications Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCertifications.map((certification) => (
+          {filteredCertifications.map((certification, index) => (
             <div
               key={certification.id}
-              className="animate-fade-in-up opacity-0"
+              className={`transform transition-all duration-400 ease-out ${
+                isFiltering 
+                  ? 'opacity-0 translate-y-4 scale-95' 
+                  : 'opacity-100 translate-y-0 scale-100'
+              }`}
               style={{
-                animation: 'fade-in-up 0.5s ease-out forwards',
-                animationDelay: '0.1s'
+                transitionDelay: isFiltering ? '0ms' : `${index * 50}ms`
               }}
             >
               <CertificationCard
