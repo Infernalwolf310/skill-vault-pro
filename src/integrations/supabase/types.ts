@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -64,7 +64,6 @@ export type Database = {
           created_at: string
           id: string
           is_admin: boolean
-          totp_secret: string | null
           updated_at: string
           user_id: string
           username: string
@@ -73,7 +72,6 @@ export type Database = {
           created_at?: string
           id?: string
           is_admin?: boolean
-          totp_secret?: string | null
           updated_at?: string
           user_id: string
           username: string
@@ -82,7 +80,6 @@ export type Database = {
           created_at?: string
           id?: string
           is_admin?: boolean
-          totp_secret?: string | null
           updated_at?: string
           user_id?: string
           username?: string
@@ -120,6 +117,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_totp_secrets: {
+        Row: {
+          created_at: string
+          id: string
+          totp_secret: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          totp_secret: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          totp_secret?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

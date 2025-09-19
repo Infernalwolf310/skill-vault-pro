@@ -21,7 +21,6 @@ export interface Profile {
   user_id: string;
   username: string;
   is_admin: boolean;
-  totp_secret?: string;
   created_at: string;
   updated_at: string;
 }
